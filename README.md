@@ -1,6 +1,6 @@
 # Welcome
 
-This is the official lemon.markets SDK. With this SDK you can do everything which is possible on the lemon.markets in an easier way, e.g.
+This is the official lemon.markets SDK. With this SDK you can do everything which is possible on the lemon.markets API in an easier way, e.g.
 - create, list and retrieve orders or transactions
 - list your portfolio
 - retrieve account details, current cash etc.
@@ -14,7 +14,7 @@ To use our API, you have to sign up on [lemon.markets](https://app.lemon.markets
 lemon.markets is completely free, we don't charge for market data or whatsoever. If you take part in our beta trading competition, you will even get the chance to win money!
 
 Installing this SDK is super easy, just run 
-```pip install lemon-markets``` and you're good to go.
+```pip install lemon-markets-sdk``` and you're good to go.
 
 ### Token
 
