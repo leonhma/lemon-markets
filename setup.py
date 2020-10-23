@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.1",
     author="Marcel Katenhusen",
     author_email="marcel@lemon.markets",
-    description="Official SDK for the lemon.markets API",
+    description="Official SDK for the lemon.markets trading & market data API",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/lemon-markets/lemon-markets-python-sdk",
