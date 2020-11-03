@@ -1,15 +1,18 @@
-import datetime
-import json
-from typing import Callable, Type, Union
+# pylama:ignore=E501
 
-import websocket
+import json
+from multiprocessing import Manager, Process, Value
+from time import time
+from typing import Callable
+
+from websocket import create_connection
 
 from lemon_markets.common.errors import StreamError
 from lemon_markets.settings import DEFAULT_STREAM_API_URL
 
 
 class BaseSerializer:
-    json_content: dict = None
+    json_content: dict
 
     def __init__(self, message: str):
         self.json_content = json.loads(message)
@@ -32,15 +35,15 @@ class BaseSerializer:
     def __repr__(self):
         output = self.to_representation()
         return str(self.__class__.__name__) \
-               + "(" + ", ".join(["{}={}".format(key, value) for key, value in output.items()]) \
-               + ")"
+            + "(" + ", ".join(["{}={}".format(key, value) for key, value in output.items()]) \
+            + ")"
 
 
 class Quote(BaseSerializer):
     isin: str
     bid_price: float
     ask_price: float
-    date: datetime.datetime
+    time: float
     bid_quantity: int
     ask_quantity: int
 
@@ -49,7 +52,7 @@ class Quote(BaseSerializer):
         self.isin = self.json_content.get("isin")
         self.bid_price = self.json_content.get("bid_price")
         self.ask_price = self.json_content.get("ask_price")
-        self.date = datetime.datetime.fromtimestamp(float(self.json_content.get("date")))
+        self.time = float(self.json_content.get("date"))
         self.bid_quantity = self.json_content.get("bid_quan")
         self.ask_quantity = self.json_content.get("ask_quan")
 
@@ -58,7 +61,7 @@ class Tick(BaseSerializer):
     isin: str
     quantity: int
     price: float
-    date: datetime.datetime
+    time: float
     side: str
 
     def __init__(self, message: str):
@@ -66,108 +69,112 @@ class Tick(BaseSerializer):
         self.isin = self.json_content.get("isin")
         self.price = self.json_content.get("price")
         self.quantity = self.json_content.get("quantity")
-        self.date = datetime.datetime.fromtimestamp(float(self.json_content.get("date")))
+        self.time = float(self.json_content.get("date"))
         self.side = self.json_content.get("side")
 
 
-class WebsocketBase:
-    serializer_class: Type[BaseSerializer] = None
-    url: str = DEFAULT_STREAM_API_URL
-    on_message: Callable = None
-    on_open: Callable = None
-    on_close: Callable = None
-    on_error: Callable = None
-    __open_status: bool = False
-    _ws: websocket.WebSocketApp = None
+class WSWorker(Process):
+    _last_message_time = 0
 
-    def __init__(self, on_message, on_open: Callable = None, on_close: Callable = None, on_error: Callable = None):
-        self.on_message = on_message
-        self.on_open = on_open
-        self.on_close = on_close
-        self.on_error = on_error
-        self._ws = websocket.WebSocketApp(
-            url=self.url,
-            on_message=lambda ws, msg: self.__on_message(ws, msg),
-            on_error=lambda ws, msg: self.__on_error(ws, msg),
-            on_close=lambda ws: self.__on_close(ws),
-            on_open=lambda ws: self.__on_open(ws)
-        )
-
-    def __on_message(self, ws, message):
-        if self.on_message:
-            instance = self.serializer_class(message=message)
-            self.on_message(ws, instance)
-
-    def __on_open(self, ws):
-        if self.on_open:
-            self.on_open(ws)
-
-    def __on_error(self, ws, msg):
-        if self.on_error:
-            self.on_error(ws, msg)
-
-    def __on_close(self, ws):
-        self.is_open = False
-        if self.on_close:
-            self.on_close(ws)
+    def __init__(self, keepalive, restart, subscribed, serializer,
+                 connect_url, typ3, callback, timeout, frequency_limit):
+        super().__init__(target=self)
+        self._keepalive = keepalive
+        self._restart = restart
+        self._subscribed = subscribed
+        self._serializer = serializer
+        self._connect_url = connect_url
+        self._type = typ3
+        self._callback = callback
+        self._timeout = timeout
+        self._frequency_limit = frequency_limit
 
     def run(self):
-        return self._ws.run_forever()
+        self._restart.value = False
+        while self._keepalive.value:
+            ws = create_connection(self._connect_url,
+                                   self._timeout)
+            for each in self._subscribed.keys():
+                ws.send(json.dumps({
+                                  "action": "subscribe",
+                                  "type": self._type,
+                                  "specifier": self._subscribed[each],
+                                  "value": each
+                              }))
+            while self._keepalive.value and not self._restart.value:
+                if(time() - self._last_message_time > self._frequency_limit):
+                    continue
+                serialized = self._serializer_class(ws.recv(), self._subscribed)
+                try:
+                    self._callback(serialized)
+                except Exception as e:
+                    self.__del__()
+                    raise ValueError(f'Error with '
+                                     'callback function '
+                                     f'{self._callback}: '
+                                     f'{e.__class__.__name__}!')
 
-    def subscribe(self, **kwargs):
-        if not kwargs:
-            raise NotImplementedError()
-        else:
-            self._ws.send(kwargs)
-
-    def unsubscribe(self, isin: Union[str, "Instrument"]):
-        self._ws.send(json.dumps({
-            "value": str(isin),
-            "action": "unsubscribe"
-        }))
-
-    def close(self):
-        self.is_open = False
-        self._ws.close()
-
-    @property
-    def is_open(self) -> bool:
-        return self.__open_status
-
-    @is_open.setter
-    def is_open(self, value: bool):
-        self.__open_status = value
-
-    @is_open.deleter
-    def is_open(self):
-        self.__open_status = False
+                self._last_message_time = time()
+            ws.close()
 
 
-class QuoteStream(WebsocketBase):
-    url = DEFAULT_STREAM_API_URL + "quotes/"
-    serializer_class = Quote
+class StreamBase():
+    _serializer = _connect_url = _type = _specifiers = _default_specifier = None
 
-    def subscribe(self, isin: Union[str, "Instrument"], specifier: str = "with-quantity-with-prices"):
-        self._ws.send(json.dumps(
-            {
-                "value": str(isin),
-                "type": "quotes",
-                "action": "subscribe",
-                "specifier": specifier
-            }
-        ))
+    _subscribed = Manager().dict()
+    _keepalive = Value('B', True)
+    _restart = Value('B', False)
+
+    def __init__(self, callback: Callable, timeout: float, frequency_limit: float):
+        self._callback = callback
+        self._timeout = timeout
+        self._frequency_limit = frequency_limit
+
+    def __del__(self):
+        self.stop()
+
+    def subscribe(self, isin: str, specifier: str = None):
+        if specifier is None:
+            specifier = self._default_specifier
+        assert specifier in self._specifiers
+        if isin in self._subscribed.keys():
+            return
+        self._subscribed[isin] = specifier
+        self._restart.value = True
+
+    def unsubscribe(self, isin: str):
+        del self._subscribed[isin]
+        self._restart.value = True
+
+    def start(self, daemon: bool = True):
+        self._ws_process = WSWorker(self._keepalive, self._restart,
+                                    self._subscribed, self._serializer,
+                                    self._connect_url, self._type,
+                                    self._callback, self._timeout,
+                                    self._frequency_limit)
+        self._ws_process.daemon = daemon
+        self._ws_process.start()
+        self._keepalive.value = True
+
+    def stop(self):
+        try:
+            self._keepalive.value = False
+            self._ws_process.join()
+        except Exception:
+            pass
 
 
-class TickStream(WebsocketBase):
-    url = DEFAULT_STREAM_API_URL + "marketdata/"
-    serializer_class = Tick
+class TickStream(StreamBase):
+    _connect_url = DEFAULT_STREAM_API_URL+'marketdata/'
+    _type = 'trades'
+    _serializer_class = Tick
+    _specifiers = ['with-quantity', 'with-uncovered', 'with-quantity-with-uncovered']
+    _default_specifier = 'with-uncovered'
 
-    def subscribe(self, isin: Union[str, "Instrument"], specifier: str = "with-uncovered"):
-        self._ws.send(json.dumps(
-            {
-                "value": str(isin),
-                "type": "trades",
-                "action": "subscribe",
-                "specifier": specifier
-            }
-        ))
+
+class QuoteStream(StreamBase):
+    _connect_url = DEFAULT_STREAM_API_URL+'quotes/'
+    _type = 'quotes'
+    _serializer_class = Quote
+    _specifiers = ['with-quantity', 'with-price', 'with-quantity-with-price']
+    _default_specifier = 'with-price'

@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="lemon-markets-sdk",
+    name="lemon_markets",
     version="0.0.1",
     author="Marcel Katenhusen",
     author_email="marcel@lemon.markets",
     description="Official SDK for the lemon.markets trading & market data API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lemon-markets/lemon-markets-python-sdk",
+    url="https://github.com/lemon-markets/lemon-markets",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
