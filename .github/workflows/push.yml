@@ -74,5 +74,5 @@ jobs:
         git add -A
         git config --global user.email "none@none.com"
         git config --global user.name "gh-pages-bot"
-        git commit -m 'Updating page version (triggered by new release)'
+        git commit -m 'Updating page version (triggered by push)'
         git push origin gh-pages --force
