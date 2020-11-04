@@ -48,6 +48,9 @@ class Quote(BaseSerializer):
         bid_quantity (int): The quantity of the bid
         ask_quantity (int): The quantity of the ask
         specifier (str): The mode in which the quote price is delivered. See :doc:`specifiers`
+
+    Note:
+        The descriptions may be incomplete
     '''
     def __init__(self, message, subscribed):
         super().__init__(message)
@@ -70,6 +73,9 @@ class Tick(BaseSerializer):
         time (float): The time of the tick (unix timestamp)
         side (int): The side (buy or sell)
         specifier (str): The mode in which the tick price is delivered. See :doc:`specifiers`
+
+    Note:
+        The descriptions may be incomplete
     '''
     def __init__(self, message, subscribed):
         super().__init__(message)
@@ -180,6 +186,9 @@ class TickStream(StreamBase):
         daemon (bool, optional): Whether to run the  worker process in daemon mode.
            If in daemon mode, the stream will terminate as soon as the main program has finished executing.
            If not, the stream stays alive until explicitly closing it using the 'del' keyword.
+
+    Note:
+        The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Tick` object representing the received tick
     '''
     _connect_url = DEFAULT_STREAM_API_URL+'marketdata/'
     _type = 'trades'
@@ -198,6 +207,9 @@ class QuoteStream(StreamBase):
         daemon (bool, optional): Whether to run the  worker process in daemon mode.
            If in daemon mode, the stream will terminate as soon as the main program has finished executing.
            If not, the stream stays alive until explicitly closing it using the 'del' keyword.
+
+    Note:
+        The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Quote` object representing the received quote
     '''
     _connect_url = DEFAULT_STREAM_API_URL+'quotes/'
     _type = 'quotes'
