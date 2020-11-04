@@ -1,7 +1,5 @@
 # pylama:ignore=E501
 
-from typing import Union
-
 from lemon_markets.common.helpers import UUIDObjectMixin
 from lemon_markets.common.objects import AbstractApiObjectMixin, ListMixin, ListIterator
 from lemon_markets.common.requests import ApiRequest
