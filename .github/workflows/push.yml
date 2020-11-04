@@ -52,7 +52,7 @@ jobs:
         SPHINX_APIDOC_OPTIONS: members
       run: |
         sphinx-apidoc -o docs/ lemon_markets
-        sphinx-build -M dirhtml docs/ build/
+        sphinx-build -M html docs/ build/
         find . -mindepth 1 ! -regex '^./build\(/.*\)?' ! -regex '^./.git\(/.*\)?' -delete
         find build/* -maxdepth 1 -mindepth 1 -not -name build -exec mv '{}' . \;
         rm -rf build/
