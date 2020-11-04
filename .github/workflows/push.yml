@@ -1,7 +1,7 @@
 name: push actions
 
 on:
-  workflow-dispatch
+  workflow-dispatch:
   push:
     ignore-branches:
       - gh-pages
