@@ -72,7 +72,7 @@ jobs:
         rm -rf build/
         touch .nojekyll
         git add -A
-        git config --global user.email "none@none.com"
-        git config --global user.name "gh-pages-bot"
+        git config --global user.email "leonhard.masche@gmail.com"
+        git config --global user.name "leonhma"
         git commit -m 'Updating page version (triggered by push)'
         git push origin gh-pages --force
