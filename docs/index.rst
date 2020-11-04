@@ -6,7 +6,6 @@ Welcome to lemon_market's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   reference
    examples
 
 

@@ -12,8 +12,6 @@ from lemon_markets.settings import DEFAULT_STREAM_API_URL
 
 
 class BaseSerializer:
-    json_content: dict
-
     def __init__(self, message: str):
         self.json_content = json.loads(message)
         self.__check_for_error()
@@ -51,14 +49,6 @@ class Quote(BaseSerializer):
         ask_quantity (int): The quantity of the ask
         specifier (str): The mode in which the quote price is delivered. See :doc:`specifiers`
     '''
-    isin: str
-    bid_price: float
-    ask_price: float
-    time: float
-    bid_quantity: int
-    ask_quantity: int
-    specifier: str
-
     def __init__(self, message, subscribed):
         super().__init__(message)
         self.isin = self.json_content.get("isin")
@@ -81,13 +71,6 @@ class Tick(BaseSerializer):
         side (int): The side (buy or sell)
         specifier (str): The mode in which the tick price is delivered. See :doc:`specifiers`
     '''
-    isin: str
-    quantity: int
-    price: float
-    time: float
-    side: str
-    specifier: str
-
     def __init__(self, message, subscribed):
         super().__init__(message)
         self.isin = self.json_content.get("isin")
