@@ -53,9 +53,9 @@ jobs:
       run: |
         sphinx-apidoc -o docs/ lemon_markets
         sphinx-build -M html docs/ build/
-        find . -not -regex '^./build\(/.*\)?' -not -regex '^./.git\(/.*\)?' -delete
-        find build/* -not -name build -exec mv '{}' . \;
-        rm -rf build
+        find . -mindepth 1 ! -regex '^./build\(/.*\)?' ! -regex '^./.git\(/.*\)?' -delete
+        find build/* -maxdepth 1 -mindepth 1 -not -name build -exec mv '{}' . \;
+        rm -rf build/
         touch .nojekyll
         git add -A
         git config --global user.email "leonhard.masche@gmail.com"
