@@ -40,6 +40,17 @@ class BaseSerializer:
 
 
 class Quote(BaseSerializer):
+    '''A class representing a Quote
+
+    Attributes:
+        isin (str): The isin of the instrument
+        bid_price (float): The bid price
+        ask_price (float): The ask price
+        time (float): The time of the quote (unix timestamp)
+        bid_quantity (int): The quantity of the bid
+        ask_quantity (int): The quantity of the ask
+        specifier (str): The mode in which the quote price is delivered. See :doc:`specifiers`
+    '''
     isin: str
     bid_price: float
     ask_price: float
@@ -60,6 +71,16 @@ class Quote(BaseSerializer):
 
 
 class Tick(BaseSerializer):
+    '''A class representing a single Tick
+
+    Attributes:
+        isin (str): The isin of the instrument
+        quantity (int): The quantity
+        price (float): The price at the time
+        time (float): The time of the tick (unix timestamp)
+        side (int): The side (buy or sell)
+        specifier (str): The mode in which the tick price is delivered. See :doc:`specifiers`
+    '''
     isin: str
     quantity: int
     price: float
@@ -167,6 +188,16 @@ class StreamBase():
 
 
 class TickStream(StreamBase):
+    '''A wrapper for the marketdata endpoint
+
+    Args:
+        callback (Callable, required): The function to call when new data is received
+        timeout (float, optional): How many seconds for no data has to be received to trigger an automatic reconnect. Default is 10
+        frequency_limit (float, optional): If set, the maximum frequency at which the callback can be called
+        daemon (bool, optional): Whether to run the  worker process in daemon mode.
+           If in daemon mode, the stream will terminate as soon as the main program has finished executing.
+           If not, the stream stays alive until explicitly closing it using the 'del' keyword.
+    '''
     _connect_url = DEFAULT_STREAM_API_URL+'marketdata/'
     _type = 'trades'
     _serializer = Tick
@@ -175,6 +206,16 @@ class TickStream(StreamBase):
 
 
 class QuoteStream(StreamBase):
+    '''A wrapper for the quotes endpoint
+
+    Args:
+        callback (Callable, required): The function to call when new data is received
+        timeout (float, optional): How many seconds for no data has to be received to trigger an automatic reconnect. Default is 10
+        frequency_limit (float, optional): If set, the maximum frequency at which the callback can be called
+        daemon (bool, optional): Whether to run the  worker process in daemon mode.
+           If in daemon mode, the stream will terminate as soon as the main program has finished executing.
+           If not, the stream stays alive until explicitly closing it using the 'del' keyword.
+    '''
     _connect_url = DEFAULT_STREAM_API_URL+'quotes/'
     _type = 'quotes'
     _serializer = Quote

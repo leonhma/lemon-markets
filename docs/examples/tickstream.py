@@ -10,5 +10,5 @@ def cb(*args):  # sample callback function. accepts however many arguments
 
 if __name__ == '__main__':  # <-- this is a so called 'mainguard'. it is necessary if you use TickStream or QuoteStream on Windows
     ts = TickStream(cb)  # initialising tickstream object
-    ts.subscribe('US88160R1014')  # subscribing ti tick data from tesla
+    ts.subscribe('US88160R1014')  # subscribing to tick data from tesla
     sleep(30)  # keeping the script alive for 30 seconds

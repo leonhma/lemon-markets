@@ -1,5 +1,9 @@
+=========
 Reference
 =========
 
-.. automodule:: lemon_markets
-    :members:
+lemon_markets.data.streams
+==========================
+
+.. automodule:: lemon_markets.data.streams
+    :members: Tick, Quote, TickStream, QuoteStream
