@@ -43,7 +43,7 @@ jobs:
         THEME=$(grep -oP '(?<=html_theme = ").+?(?=")' docs/conf.py)
         python3 -m pip install --upgrade pip
         pip install sphinx $THEME
-        python3 setup.py install
+        pip install -r requirements.txt
     - name: Change conf.py version
       run: |
         sed -i -E 's|release = ".*?"|release = "${{ github.event.release.tag_name }}"|g' docs/conf.py
@@ -54,8 +54,8 @@ jobs:
         sphinx-apidoc -o docs/ lemon_markets
         sphinx-build -M html docs/ build/
         find . -mindepth 1 ! -regex '^./build/html\(/.*\)?' ! -regex '^./.git\(/.*\)?' -delete
-        find build/* -maxdepth 1 -mindepth 1 -not -name build -exec mv '{}' . \;
-        rm -rf build/
+        find build/* -not -name build -exec mv '{}' . \;
+        rm -rf build
         touch .nojekyll
         git add -A
         git config --global user.email "leonhard.masche@gmail.com"
