@@ -53,7 +53,7 @@ jobs:
       run: |
         sphinx-apidoc -o docs/ lemon_markets
         sphinx-build -M html docs/ build/
-        find . -mindepth 1 ! -regex '^./build/html\(/.*\)?' ! -regex '^./.git\(/.*\)?' -delete
+        find . -not -regex '^./build\(/.*\)?' -not -regex '^./.git\(/.*\)?' -delete
         find build/* -not -name build -exec mv '{}' . \;
         rm -rf build
         touch .nojekyll
