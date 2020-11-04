@@ -7,6 +7,7 @@ Welcome to lemon_market's documentation!
    :caption: Contents:
 
    reference
+   examples
 
 
 
