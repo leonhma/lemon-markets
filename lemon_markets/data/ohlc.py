@@ -1,3 +1,5 @@
+# pylama:ignore=E501
+
 import datetime
 from typing import Union
 
@@ -23,10 +25,10 @@ class TradeObject(AbstractApiObject):
 class AbstractDataMixin(ListMixin):
 
     @classmethod
-    def _build_endpoint(cls, instrument: Union[str, "Instrument"]) -> str:
+    def _build_endpoint(cls, instrument) -> str:
         raise NotImplementedError()
 
-    def latest(self, instrument: Union[str, "Instrument"], authorization_token: Union[str, "Token"] = None):
+    def latest(self, instrument, authorization_token=None):
         request = ApiRequest(
             endpoint=self._build_endpoint(instrument=instrument) + "latest/",
             method="GET",
@@ -36,19 +38,19 @@ class AbstractDataMixin(ListMixin):
         self.set_data(request.response)
         return self
 
-    def retrieve(self, instrument: Union[str, "Instrument"], authorization_token: Union[str, "Token"] = None):
+    def retrieve(self, instrument, authorization_token=None):
         return self.latest(instrument=instrument, authorization_token=authorization_token)
 
     @classmethod
     def list(
              cls,
-             instrument: Union[str, "Instrument"],
+             instrument,
              ordering: str = "-date",
              date_from: Union[str, datetime.datetime] = None,
              date_until: Union[str, datetime.datetime] = None,
              limit: int = None,
              offset: int = None,
-             authorization_token: Union[str, "Token"] = None,
+             authorization_token=None,
              ):
         return ListMixin.list(ordering=ordering,
                               date_from=date_from,
@@ -63,7 +65,7 @@ class AbstractDataMixin(ListMixin):
 class M1(OHLCObject, AbstractDataMixin):
 
     @classmethod
-    def _build_endpoint(cls, instrument: Union[str, "Instrument"]) -> str:
+    def _build_endpoint(cls, instrument) -> str:
         endpoint = "data/instruments/{}/candle/m1/".format(str(instrument))
         return endpoint
 
@@ -71,7 +73,7 @@ class M1(OHLCObject, AbstractDataMixin):
 class Trades(TradeObject, AbstractDataMixin):
 
     @classmethod
-    def _build_endpoint(cls, instrument: Union[str, "Instrument"] = None) -> str:
+    def _build_endpoint(cls, instrument) -> str:
         endpoint = "data/instruments/{}/ticks/".format(str(instrument))
         return endpoint
 

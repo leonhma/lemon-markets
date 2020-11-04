@@ -1,5 +1,6 @@
+# pylama:ignore=E501
+
 import datetime
-from abc import ABC, abstractmethod
 
 from lemon_markets.common.errors import BaseError
 
@@ -23,8 +24,6 @@ class AccountError(BaseError):
 
 
 class AccountObjectMixin:
-    account: "Account"
-
     def check_instance(self):
         if hasattr(self, "account") and hasattr(self.account, "uuid"):
             return True

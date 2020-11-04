@@ -1,3 +1,5 @@
+# pylama:ignore=E501
+
 from typing import Union
 
 from lemon_markets.common.helpers import UUIDObjectMixin
@@ -42,7 +44,7 @@ class Account(AccountState, UUIDObjectMixin, AbstractApiObjectMixin, ListMixin):
         currency: str
         uuid: str
 
-    def __init__(self, uuid: str, authorization_token: Union[str, "Token"] = None):
+    def __init__(self, uuid: str, authorization_token=None):
         super().__init__(uuid=uuid, authorization_token=authorization_token)
         self.uuid = uuid
         self._token = authorization_token
@@ -67,7 +69,7 @@ class Account(AccountState, UUIDObjectMixin, AbstractApiObjectMixin, ListMixin):
         return self
 
     @staticmethod
-    def list(authorization_token: Union[str, "Token"], limit: int = None, offset: int = None) -> ListIterator:
+    def list(authorization_token, limit: int = None, offset: int = None) -> ListIterator:
         return ListMixin.list(object_class=Account,
                               authorization_token=authorization_token,
                               limit=limit,

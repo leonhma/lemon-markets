@@ -1,3 +1,5 @@
+# pylama:ignore=E501
+
 import json
 from json import JSONDecodeError
 from typing import Union
@@ -48,12 +50,12 @@ class ApiRequest:
     method: str = "GET"
     body: dict
     authorization_token: str
-    _account: "Account" = None
+    _account = None
     _kwargs: dict
     _response: ApiResponse
 
     def __init__(self, endpoint: str, method: str = "GET", body: dict = None,
-                 authorization_token: Union[str, "Token"] = None, url_params: dict = {}, **kwargs):
+                 authorization_token=None, url_params: dict = {}, **kwargs):
         if kwargs.get("account"):
             self._account = kwargs.get("account")
         if self._account and self._account.token:

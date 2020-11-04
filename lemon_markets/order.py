@@ -1,3 +1,5 @@
+# pylama:ignore=E501
+
 import datetime
 from typing import Union
 

@@ -1,3 +1,5 @@
+# pylama:ignore=E501
+
 from lemon_markets.account import Account
 from lemon_markets.common.helpers import UUIDAccountObjectMixin
 from lemon_markets.common.objects import AbstractApiObjectMixin, ListMixin, ListIterator

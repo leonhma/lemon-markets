@@ -1,3 +1,5 @@
+# pylama:ignore=E501
+
 from typing import Union
 
 from lemon_markets.common.objects import AbstractApiObjectMixin, ListMixin, ListIterator
@@ -14,8 +16,8 @@ class Instrument(AbstractApiObjectMixin, ListMixin):
         wkn: str
 
     def __init__(self, isin: str = None,
-                 account: "Account" = None,
-                 authorization_token: Union[str, "Token"] = None,
+                 account=None,
+                 authorization_token=None,
                  **kwargs):
         super().__init__(isin=isin, authorization_token=authorization_token, account=account, **kwargs)
         self.isin = isin
@@ -31,7 +33,7 @@ class Instrument(AbstractApiObjectMixin, ListMixin):
     def list(
             search: str = "",
             type: Union[str, list] = "",
-            authorization_token: Union[str, "Token"] = None,
+            authorization_token=None,
     ) -> ListIterator:
         return ListMixin.list(object_class=Instrument,
                               search=search,
