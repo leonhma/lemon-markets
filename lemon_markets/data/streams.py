@@ -1,5 +1,4 @@
-# pylama:ignore=E501
-
+import datetime
 import json
 import multiprocessing
 from time import time
@@ -12,6 +11,8 @@ from lemon_markets.settings import DEFAULT_STREAM_API_URL
 
 
 class BaseSerializer:
+    json_content: dict = None
+
     def __init__(self, message: str):
         self.json_content = json.loads(message)
         self.__check_for_error()
@@ -57,7 +58,7 @@ class Quote(BaseSerializer):
         self.isin = self.json_content.get("isin")
         self.bid_price = self.json_content.get("bid_price")
         self.ask_price = self.json_content.get("ask_price")
-        self.time = float(self.json_content.get("date"))
+        self.date = datetime.datetime.fromtimestamp(float(self.json_content.get("date")))
         self.bid_quantity = self.json_content.get("bid_quan")
         self.ask_quantity = self.json_content.get("ask_quan")
         self.specifier = subscribed[self.isin]
@@ -82,7 +83,7 @@ class Tick(BaseSerializer):
         self.isin = self.json_content.get("isin")
         self.price = self.json_content.get("price")
         self.quantity = self.json_content.get("quantity")
-        self.time = float(self.json_content.get("date"))
+        self.date = datetime.datetime.fromtimestamp(float(self.json_content.get("date")))
         self.side = self.json_content.get("side")
         self.specifier = subscribed[self.isin]
 
@@ -188,7 +189,8 @@ class TickStream(StreamBase):
            If not, the stream stays alive until explicitly closing it using the 'del' keyword.
 
     Note:
-        The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Tick` object representing the received tick
+        The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Tick` object
+        representing the received tick
     '''
     _connect_url = DEFAULT_STREAM_API_URL+'marketdata/'
     _type = 'trades'
@@ -209,7 +211,8 @@ class QuoteStream(StreamBase):
            If not, the stream stays alive until explicitly closing it using the 'del' keyword.
 
     Note:
-        The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Quote` object representing the received quote
+        The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Quote`
+        object representing the received quote
     '''
     _connect_url = DEFAULT_STREAM_API_URL+'quotes/'
     _type = 'quotes'

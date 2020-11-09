@@ -1,5 +1,3 @@
-# pylama:ignore=E501
-
 from lemon_markets.data.streams import TickStream
 from time import sleep
 

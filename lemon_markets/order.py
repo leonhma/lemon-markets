@@ -1,5 +1,3 @@
-# pylama:ignore=E501
-
 import datetime
 from typing import Union
 
@@ -84,11 +82,11 @@ class Order(CreateMixin, UUIDAccountObjectMixin, AbstractApiObjectMixin, ListMix
     def destroy(self, raise_exception: bool = False) -> bool:
         try:
             self.check_instance()
-# unused    request = ApiRequest(
-#               endpoint="orders/{}/".format(self.uuid),
-#               account=self.account,
-#               method="DELETE"
-#           )
+            ApiRequest(
+                endpoint="orders/{}/".format(self.uuid),
+                account=self.account,
+                method="DELETE"
+            )
             return True
         except Exception as e:
             if raise_exception:

@@ -11,7 +11,7 @@ setuptools.setup(
     description="Official SDK for the lemon.markets trading & market data API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lemon-markets/lemon-markets",
+    url="https://github.com/lemon-markets/lemon-markets-python-sdk",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

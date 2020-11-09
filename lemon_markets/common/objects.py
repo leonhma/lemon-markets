@@ -1,5 +1,3 @@
-# pylama:ignore=E501
-
 import datetime
 from typing import get_type_hints, Any
 
