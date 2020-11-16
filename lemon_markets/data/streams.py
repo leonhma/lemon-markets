@@ -45,7 +45,7 @@ class Quote(BaseSerializer):
         isin (str): The isin of the instrument
         bid_price (float): The bid price
         ask_price (float): The ask price
-        time (float): The time of the quote (unix timestamp)
+        date (datetime.datetime): The datetime of the quote (will yield human-readable string if printed)
         bid_quantity (int): The quantity of the bid
         ask_quantity (int): The quantity of the ask
         specifier (str): The mode in which the quote price is delivered. See :doc:`specifiers`
@@ -71,7 +71,7 @@ class Tick(BaseSerializer):
         isin (str): The isin of the instrument
         quantity (int): The quantity
         price (float): The price at the time
-        time (float): The time of the tick (unix timestamp)
+        date (datetime.datetime): The datetime of the tick (will yield human-readable string if printed)
         side (int): The side (buy or sell)
         specifier (str): The mode in which the tick price is delivered. See :doc:`specifiers`
 
