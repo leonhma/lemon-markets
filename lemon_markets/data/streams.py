@@ -123,14 +123,7 @@ class WSWorker(multiprocessing.Process):
                     serialized = self._serializer(ws.recv(), self._subscribed)
                 except Exception:
                     break
-                try:
-                    self._callback(serialized)
-                except Exception as e:
-                    raise ValueError(f'Error with '
-                                     'callback '
-                                     f'{self._callback}: '
-                                     f'{e.__class__.__name__}')
-
+                self._callback(serialized)
                 self._last_message_time = time()
             ws.close()
 
