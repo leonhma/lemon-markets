@@ -131,7 +131,7 @@ class WSWorker(multiprocessing.Process):
 class StreamBase():
     _serializer = _connect_url = _type = _specifiers = _default_specifier = None
 
-    def __init__(self, callback: Callable, timeout: float = 10, frequency_limit: float = 0, daemon: bool = True):
+    def __init__(self, callback: Callable, timeout: float = 10, frequency_limit: float = 0):
         self._timeout = timeout
         self._frequency_limit = frequency_limit
         manager = multiprocessing.Manager()
@@ -144,7 +144,6 @@ class StreamBase():
                                     self._connect_url, self._type,
                                     callback, self._timeout,
                                     self._frequency_limit)
-        self._ws_process.daemon = daemon
         self._keepalive.value = True
         self._ws_process.start()
 
@@ -177,9 +176,6 @@ class TickStream(StreamBase):
         callback (Callable, required): The function to call when new data is received
         timeout (float, optional): How many seconds for no data has to be received to trigger an automatic reconnect. Default is 10
         frequency_limit (float, optional): If set, the maximum frequency at which the callback can be called
-        daemon (bool, optional): Whether to run the  worker process in daemon mode.
-           If in daemon mode, the stream will terminate as soon as the main program has finished executing.
-           If not, the stream stays alive until explicitly closing it using the 'del' keyword.
 
     Note:
         The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Tick` object
@@ -199,9 +195,6 @@ class QuoteStream(StreamBase):
         callback (Callable, required): The function to call when new data is received
         timeout (float, optional): How many seconds for no data has to be received to trigger an automatic reconnect. Default is 10
         frequency_limit (float, optional): If set, the maximum frequency at which the callback can be called
-        daemon (bool, optional): Whether to run the  worker process in daemon mode.
-           If in daemon mode, the stream will terminate as soon as the main program has finished executing.
-           If not, the stream stays alive until explicitly closing it using the 'del' keyword.
 
     Note:
         The callback has to accept one parameter. This parameter will be passed a :class:`lemon_markets.data.streams.Quote`
