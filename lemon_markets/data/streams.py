@@ -144,6 +144,7 @@ class StreamBase():
                                     self._connect_url, self._type,
                                     callback, self._timeout,
                                     self._frequency_limit)
+        self._ws_process.daemon = True
         self._keepalive.value = True
         self._ws_process.start()
 
