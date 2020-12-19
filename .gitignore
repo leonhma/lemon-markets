@@ -71,6 +71,3 @@ docs/_build/
 
 # PyBuilder
 target/
-
-# pylama.ini
-pylama.ini
